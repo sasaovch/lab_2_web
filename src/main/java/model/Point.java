@@ -5,6 +5,7 @@ import lombok.NonNull;
 
 @Data
 public class Point {
+    private Integer attampt;
     @NonNull 
     private Double x;
     @NonNull 

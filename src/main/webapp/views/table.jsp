@@ -2,6 +2,8 @@
 <%@ page import="model.Point" %>
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!-- <%@ page buffer="20kb" autoFlush="false" %> -->
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -36,12 +38,11 @@
                     </label>
                 </td>
                     <td id="graph-style">
-                        <canvas id="graph" width="400%" alt="Graph" height="400%" style="border: 3px solid var(--border-color);"></canvas>
+                        <canvas id="graph" width="600%" alt="Graph" height="600%" style="border: 3px solid var(--border-color);"></canvas>
                     </td>
                         <tr>
                             <td></td>
                             <td>
-                                <!-- onsubmit="return checkAndSendForm(this)" -->
                                 <form id="form">
                                     <table class="select-table">
                                         <tr>
@@ -117,31 +118,19 @@
             <tr>
                 <td colspan="2" style="padding:1%">
                     <table id="results">
-                        <tr>
-                            <th>Attempt #</th>
-                            <th>X</th>
-                            <th>Y</th>
-                            <th>R</th>
-                            <th>Result</th>
-                            <th>Attempt time</th>
-                            <th>Processing time</th>
-                        </tr>
-                        <%
-                        List<Point> points = (List<Point>) request.getAttribute("points");
-                        int counter = 1;
-        
-                        if (points != null && !points.isEmpty()) {
-                            for (Point point : points) {
-                                out.println("<tr>");
-                                out.println("<th>" + counter++ + "</th>");
-                                out.println("<th>" + point.getX() + "</th>");
-                                out.println("<th>" + point.getY() + "</th>");
-                                out.println("<th>" + point.getR() + "</th>");
-                                out.println("<th>" + point.getResult() + "</th>");
-                                out.println("</tr>");
-                            }
-                        } else out.println("<p>There are no points yet!</p>");
-                        %>
+                        <thead>
+                            <tr>
+                                <th>Attempt #</th>
+                                <th>X</th>
+                                <th>Y</th>
+                                <th>R</th>
+                                <th>Result</th>
+                                <th>Attempt time</th>
+                                <th>Processing time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="items">
+                        </tbody>
                     </table>
                 </td>
                 <td>

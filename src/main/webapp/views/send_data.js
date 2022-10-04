@@ -1,6 +1,4 @@
-import {dots} from './drawGraph.js';
-
-export function bindDataSendingButtons(/* clickSentCallback,*/ BASE_URL) {
+export function bindDataSendingButtons(clickSentCallback, BASE_URL) {
     $("form").submit(function(e) {
         document.getElementById('warning').innerHTML = "";
         e.preventDefault();
@@ -11,8 +9,7 @@ export function bindDataSendingButtons(/* clickSentCallback,*/ BASE_URL) {
             url: BASE_URL + "?" +  $("#form").serialize() + "&x=" + x,
             type: "get",
             success: function(response) {
-                console.log("Goog job");
-                dots.push($("form").serialize());
+                clickSentCallback(JSON.parse(response));
             },
             error: function(xhr) {
                 console.log("Error");
@@ -22,7 +19,6 @@ export function bindDataSendingButtons(/* clickSentCallback,*/ BASE_URL) {
             if (!(validateTextNumber($("#input_y").val()) && validateNumber(parseFloat($("#input_y").val()), -5, 3))) {
                 document.getElementById("warning").innerHTML = "Please, enter rigth value for Y";
             } else {
-                console.log($("form").serialize());
                 document.getElementById("warning").innerHTML = "Please, enter rigth value for R";
             }
         }
@@ -31,7 +27,7 @@ export function bindDataSendingButtons(/* clickSentCallback,*/ BASE_URL) {
     const canvas = (document.getElementById("graph"));
     const width = canvas.width;
     const height = canvas.height;
-    const rValue = width / 2.5
+    const canvasR = width / 5;
 
     canvas.onmousedown = function(event) {
         document.getElementById('warning').innerHTML = "";
@@ -41,32 +37,31 @@ export function bindDataSendingButtons(/* clickSentCallback,*/ BASE_URL) {
             return;
         }
         const r = parseFloat($("#input_r").val());
-        const x = convertXToRadiusOf(event.offsetX, r);
-        const y = convertYToRadiusOf(event.offsetY, r);
+        const x = convertXToRadiusOf(event.offsetX, r).toFixed(3);
+        const y = convertYToRadiusOf(event.offsetY, r).toFixed(3);
 
         $.ajax({
             url: BASE_URL + "?" + "x=" + x + "&y=" + y + "&r=" + r,
             type: "get",
             success: function(response) {
-                console.log("Goog job");
-                dots.push($("form").serialize());
+                clickSentCallback(JSON.parse(response));
             },
             error: function(xhr) {
-            console.log("Error");
+                console.log("Error");
             }
           });
     };
 
     function convertXToRadiusOf(x, r) {
-        return ((x - width / 2) / rValue) * r;
+        return ((x - width / 2) / canvasR) * r;
     }
 
     function convertYToRadiusOf(y, r) {
-        return ((height - y - height / 2) / rValue) * r;
+        return ((height / 2 - y) / canvasR) * r;
     }
 
     function validateTextNumber(text) {
-        const numberPattern = /^[+-]?(\d*[.,])?\d+$/;
+        const numberPattern = /^[+-]?(\d*[.])?\d+$/;
     
         const number = parseFloat(text);
         if (Number.isNaN(number)

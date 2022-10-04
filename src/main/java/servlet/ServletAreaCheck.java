@@ -1,52 +1,68 @@
 package servlet;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.PrintWriter;
+
+import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.annotation.WebServlet;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletContext;
 
 import model.Point;
 import model.TablePoint;
 
-@WebServlet(name = "ServletAreaCheck", value = "/areaCheck")
 public class ServletAreaCheck extends HttpServlet {
+
+    private Gson gson = new Gson();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ServletContext context = getServletContext();
-        context.log("AreaCheck DO GET");
 
         Double x = Double.parseDouble(req.getParameter("x"));
         Double y = Double.parseDouble(req.getParameter("y"));
         Double r = Double.parseDouble(req.getParameter("r"));
         
-        if (r < 0) {
-            req.setAttribute("warning", "Value of R must be greater than zero");
-            req.getRequestDispatcher("views/table.jsp").forward(req, resp);
+        if (r < 2 || r > 5) {
+            req.setAttribute("warning", "Value of R must be in range [2; 5]");
+            req.getRequestDispatcher("./views/table.jsp").forward(req, resp);
+            return;
+        } else if (x < -5 || x > 3) {
+            req.setAttribute("warning", "Value of X must be in range [-5; 3]");
+            req.getRequestDispatcher("./views/table.jsp").forward(req, resp);
+            return;
+            // resp.sendRedirect(req.getContextPath() + "/");
+        } else if (y < -5 || y > 3) {
+            req.setAttribute("warning", "Value of Y must be in range [-5; 3]");
+            // resp.sendRedirect(req.getContextPath() + "/");
+            req.getRequestDispatcher("./views/table.jsp").forward(req, resp);
+            return;
         }
         
-        context.log("Get: " + x + " " + y + " " + r);
         Point point = new Point(x, y, r, checkHit(x, y, r));
-        // TablePoint.getInstance().addPoint(point);
-        // List<Point> points = TablePoint.getInstance().getPoints();
-        // req.setAttribute("points", points);
 
         HttpSession session = req.getSession();
         
         if (session.getAttribute("points") == null) {
             TablePoint table = new TablePoint();
             table.addPoint(point);
-            session.setAttribute("points", table.getPoints());
+            session.setAttribute("points", table);
+            PrintWriter writer = resp.getWriter();
+            writer.print(gson.toJson(table.getPoints()));
+            writer.flush();
+            writer.close();
+        } else {
+            TablePoint table = (TablePoint) session.getAttribute("points");
+            table.addPoint(point);
+            session.setAttribute("points", table);
+            PrintWriter writer = resp.getWriter();
+            writer.print(gson.toJson(table.getPoints()));
+            writer.flush();
+            writer.close();
         }
-        
-        req.getRequestDispatcher("views/table.jsp").forward(req, resp);
     }
 
     @Override

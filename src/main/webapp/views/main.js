@@ -1,6 +1,9 @@
-import {setColorGraph, initialilzeGraph} from "./drawGraph.js";
+import {setColors, initialilzeGraph, paintPoints} from "./drawGraph.js";
 import {bindDataSendingButtons} from "./send_data.js";
 import { BASE_URL } from "./constants.js";
+
+var graphColor = "";
+var graphPointColor = "";
 
 const getCookie = name => {
     const cookies = document.cookie.split(';')
@@ -17,8 +20,10 @@ function checkTheme() {
     if (getCookie('theme') == 'dark-theme') {
         document.body.className = 'dark-theme';
         graphColor = 'white'
+        graphPointColor = 'red';
     } else {
         graphColor = 'blue';
+        graphPointColor = '#2ff1c1';
         document.body.className = 'light-theme';
     }
 }
@@ -27,38 +32,48 @@ function switchTheme() {
     if (getCookie('theme') == 'light-theme') {
         document.body.className = 'dark-theme';
         graphColor = 'white'
+        graphPointColor = 'red';
         document.cookie = 'theme=' + 'dark-theme';
-        setColorGraph(graphColor);
     }
     else {
         document.body.className = 'light-theme';
         graphColor = 'blue';
+        graphPointColor = '#2ff1c1';
         document.cookie = 'theme=' + 'light-theme';
-        setColorGraph(graphColor);
     }    
+    setColors(graphColor, graphPointColor);
 }
 
-function validateTextNumber(text) {
-    const numberPattern = /^[+-]?(\d*[.,])?\d+$/;
-
-    const number = parseFloat(text);
-    if (Number.isNaN(number)
-        || !numberPattern.test(text)) {
-        return false;
-    } else {
-        return true;
-    }
+function fillTable(tableData) {
+    const tbody = document.getElementById("items");
+    tbody.innerHTML = "";
+    tableData.forEach((row) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${row.attampt}</td><td>${row.x}</td><td>${row.y}</td><td>${row.r}</td><td>${row.result}</td><td>${row.time}</td><td>${row.execTime}</td>`;
+        tbody.appendChild(tr);
+    });
 }
 
-function validateNumber(number, start, finish) {
-    return start <= number <= finish;
-}
-
-var graphColor = "";
-console.log("It's working");
 checkTheme();
-initialilzeGraph(graphColor);
-bindDataSendingButtons(BASE_URL);
-
+initialilzeGraph(graphColor, graphPointColor);
+bindDataSendingButtons((tableData) => {
+    paintPoints(tableData);
+    fillTable(tableData);
+}, BASE_URL);
+$.ajax({
+    url: BASE_URL,
+    type: "get",
+    success: function(response) {
+        paintPoints(JSON.parse(response));
+        fillTable(JSON.parse(response));
+    },
+    error: function(xhr) {
+        console.log("Error");
+    }
+});
 const toggleSwitch = document.querySelector('.switch input[type="checkbox"]');
 toggleSwitch.addEventListener('change', switchTheme, false);
+
+// document.addEventListener("DOMContentLoaded", () => {
+//     document.getElementById('warning').innerHTML = "";
+// });
