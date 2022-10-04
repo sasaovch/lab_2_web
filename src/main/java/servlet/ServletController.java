@@ -32,7 +32,6 @@ public class ServletController extends HttpServlet {
             if (session.getAttribute("points") == null) {
                 TablePoint table = new TablePoint();
                 session.setAttribute("points", table);
-                context.log(gson.toJson(table.getPoints()));
                 PrintWriter writer = resp.getWriter();
                 writer.print(gson.toJson(table.getPoints()));
                 writer.flush();

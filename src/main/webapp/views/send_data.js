@@ -36,9 +36,18 @@ export function bindDataSendingButtons(clickSentCallback, BASE_URL) {
             document.getElementById("warning").innerHTML = "Please, enter rigth value for R";
             return;
         }
+
         const r = parseFloat($("#input_r").val());
         const x = convertXToRadiusOf(event.offsetX, r).toFixed(3);
         const y = convertYToRadiusOf(event.offsetY, r).toFixed(3);
+
+        if (!validateNumber(parseFloat(y), -5, 3)) {
+            document.getElementById("warning").innerHTML = "Please, click on rigth value for Y";
+            return;
+        } else if (!validateNumber(parseFloat(x), -5, 3)) {
+            document.getElementById("warning").innerHTML = "Please, click on rigth value for X";
+            return;
+        }
 
         $.ajax({
             url: BASE_URL + "?" + "x=" + x + "&y=" + y + "&r=" + r,

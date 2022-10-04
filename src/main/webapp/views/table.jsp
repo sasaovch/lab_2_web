@@ -130,6 +130,23 @@
                             </tr>
                         </thead>
                         <tbody id="items">
+                            <!-- <%
+                            List<Point> points = (List<Point>) request.getAttribute("points");
+            
+                            if (points != null && !points.isEmpty()) {
+                                for (Point point : points) {
+                                    out.println("<tr>");
+                                    out.println("<th>" + point.getAttampt() + "</th>");
+                                    out.println("<th>" + point.getX() + "</th>");
+                                    out.println("<th>" + point.getY() + "</th>");
+                                    out.println("<th>" + point.getR() + "</th>");
+                                    out.println("<th>" + point.getResult() + "</th>");
+                                    out.println("<th>" + point.getTime() + "</th>");
+                                    out.println("<th>" + point.getDuration() + "</th>");
+                                    out.println("</tr>");
+                                }
+                            } else out.println("<p>There are no points yet!</p>");
+                            %> -->
                         </tbody>
                     </table>
                 </td>

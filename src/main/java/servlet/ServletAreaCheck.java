@@ -2,6 +2,9 @@ package servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import com.google.gson.Gson;
 
@@ -9,7 +12,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 
 import model.Point;
@@ -21,6 +24,9 @@ public class ServletAreaCheck extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ServletContext context = getServletContext();
+        HttpSession session = req.getSession();
+        context.log("ServletAreaCheck: doGet");
 
         Double x = Double.parseDouble(req.getParameter("x"));
         Double y = Double.parseDouble(req.getParameter("y"));
@@ -41,28 +47,24 @@ public class ServletAreaCheck extends HttpServlet {
             req.getRequestDispatcher("./views/table.jsp").forward(req, resp);
             return;
         }
-        
-        Point point = new Point(x, y, r, checkHit(x, y, r));
 
-        HttpSession session = req.getSession();
+        long startTime = System.nanoTime();
         
+        Point point = new Point(x, y, r, checkHit(x, y, r), LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM, dd, yyyy HH:mm:ss", Locale.US)));
+        
+        TablePoint table;
         if (session.getAttribute("points") == null) {
-            TablePoint table = new TablePoint();
-            table.addPoint(point);
-            session.setAttribute("points", table);
-            PrintWriter writer = resp.getWriter();
-            writer.print(gson.toJson(table.getPoints()));
-            writer.flush();
-            writer.close();
+            table = new TablePoint();
         } else {
-            TablePoint table = (TablePoint) session.getAttribute("points");
-            table.addPoint(point);
-            session.setAttribute("points", table);
-            PrintWriter writer = resp.getWriter();
-            writer.print(gson.toJson(table.getPoints()));
-            writer.flush();
-            writer.close();
+            table = (TablePoint) session.getAttribute("points");
         }
+        point.setDuration((System.nanoTime() - startTime) / 1000000.0F);
+        table.addPoint(point);
+        session.setAttribute("points", table);
+        PrintWriter writer = resp.getWriter();
+        writer.print(gson.toJson(table.getPoints()));
+        writer.flush();
+        writer.close();
     }
 
     @Override

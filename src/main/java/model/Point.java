@@ -14,4 +14,7 @@ public class Point {
     private Double r;
     @NonNull 
     private Boolean result;
+    @NonNull
+    private String time;
+    private float duration;
 }
