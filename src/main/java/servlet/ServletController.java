@@ -21,7 +21,6 @@ public class ServletController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ServletContext context = getServletContext();
         context.log("ServletController: doGet");
-        // TODO: Log in file
         HttpSession session = req.getSession();
         
         if (session.getAttribute("theme") == null) {

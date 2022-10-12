@@ -2,7 +2,6 @@ package model;
 
 import lombok.Data;
 import lombok.NonNull;
-
 @Data
 public class Point {
     private Integer attampt;

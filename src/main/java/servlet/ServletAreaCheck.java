@@ -1,12 +1,9 @@
 package servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-
-import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,8 +16,6 @@ import model.Point;
 import model.TablePoint;
 
 public class ServletAreaCheck extends HttpServlet {
-
-    private Gson gson = new Gson();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -40,10 +35,8 @@ public class ServletAreaCheck extends HttpServlet {
             req.setAttribute("warning", "Value of X must be in range [-5; 3]");
             req.getRequestDispatcher("./views/table.jsp").forward(req, resp);
             return;
-            // resp.sendRedirect(req.getContextPath() + "/");
         } else if (y < -5 || y > 3) {
             req.setAttribute("warning", "Value of Y must be in range [-5; 3]");
-            // resp.sendRedirect(req.getContextPath() + "/");
             req.getRequestDispatcher("./views/table.jsp").forward(req, resp);
             return;
         }
@@ -53,6 +46,7 @@ public class ServletAreaCheck extends HttpServlet {
         Point point = new Point(x, y, r, checkHit(x, y, r), LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM, dd, yyyy HH:mm:ss", Locale.US)));
         
         TablePoint table;
+        
         if (session.getAttribute("points") == null) {
             table = new TablePoint();
         } else {
@@ -61,10 +55,7 @@ public class ServletAreaCheck extends HttpServlet {
         point.setDuration((System.nanoTime() - startTime) / 1000000.0F);
         table.addPoint(point);
         session.setAttribute("points", table);
-        PrintWriter writer = resp.getWriter();
-        writer.print(gson.toJson(table.getPoints()));
-        writer.flush();
-        writer.close();
+        req.getRequestDispatcher("./views/table.jsp").forward(req, resp);
     }
 
     @Override

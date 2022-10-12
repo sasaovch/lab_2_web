@@ -7,9 +7,7 @@ var graphCanvas;
 var graph;
 var graphColor;
 var graphPointColor;
-var dots = [];
 var canvasR;
-export {dots};
 
 function drawLine(graph, startX, startY, endX, endY) {
     graph.moveTo(startX, startY);
@@ -108,15 +106,17 @@ function convertYToCanvasCoordinate(y, r) {
 }
 
 function drawDots() {
-    dots.forEach((dot) => {
-        const x = convertXToCanvasCoordinate(dot.x, dot.r);
-        const y = convertYToCanvasCoordinate(dot.y, dot.r);
+    let dots = document.getElementById("items");
+    for (let i = 0; i < dots.rows.length; i++) {
+        let dot = dots.rows.item(i).cells;
+        const x = convertXToCanvasCoordinate(dot.item(1).innerHTML, dot.item(3).innerHTML);
+        const y = convertYToCanvasCoordinate(dot.item(2).innerHTML, dot.item(3).innerHTML);
         graph.fillStyle = graphPointColor;
         graph.strokeStyle = graphPointColor;
         graph.beginPath();
         graph.arc(x, y, heightLine, 0, Math.PI * 2);
         graph.fill();
-    })
+    }
 }
 
 function setOnMouseMove() {
@@ -152,12 +152,4 @@ function setColors(colorGraph, colorPoint) {
     drawGraph();
 }
 
-function paintPoints(points) {
-    while(dots.length > 0) {
-        dots.pop();
-    }
-    points.forEach((point) => {dots.push(point)});
-    drawGraph();
-}
-
-export {setColors, initialilzeGraph, paintPoints};
+export {setColors, initialilzeGraph};

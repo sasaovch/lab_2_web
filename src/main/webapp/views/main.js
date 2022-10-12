@@ -1,9 +1,12 @@
-import {setColors, initialilzeGraph, paintPoints} from "./drawGraph.js";
-import {bindDataSendingButtons} from "./send_data.js";
-import { BASE_URL } from "./constants.js";
+import {setColors, initialilzeGraph} from "./drawGraph.js";
 
 var graphColor = "";
 var graphPointColor = "";
+const canvas = (document.getElementById("graph"));
+const width = canvas.width;
+const height = canvas.height;
+const canvasR = width / 5;
+const toggleSwitch = document.querySelector('.switch input[type="checkbox"]');
 
 const getCookie = name => {
     const cookies = document.cookie.split(';')
@@ -44,36 +47,72 @@ function switchTheme() {
     setColors(graphColor, graphPointColor);
 }
 
-function fillTable(tableData) {
-    const tbody = document.getElementById("items");
-    tbody.innerHTML = "";
-    tableData.forEach((row) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${row.attampt}</td><td>${row.x}</td><td>${row.y}</td><td>${row.r}</td><td>${row.result}</td><td>${row.time}</td><td>${row.execTime}</td>`;
-        tbody.appendChild(tr);
-    });
+function convertXToRadiusOf(x, r) {
+    return ((x - width / 2) / canvasR) * r;
+}
+
+function convertYToRadiusOf(y, r) {
+    return ((height / 2 - y) / canvasR) * r;
+}
+
+function validateTextNumber(text) {
+    const numberPattern = /^[+-]?(\d*[.])?\d+$/;
+
+    const number = parseFloat(text);
+    if (Number.isNaN(number)
+        || !numberPattern.test(text)) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function validateNumber(number, start, finish) {
+    return start <= number && number <= finish;
+}
+
+function checkMyForm(event) {
+    console.log("checkMyForm");
+    document.getElementById('warning').innerHTML = "";
+    if (validateTextNumber($("#input_y").val()) && validateNumber(parseFloat($("#input_y").val()), -5, 3)
+    && validateTextNumber($("#input_r").val()) && validateNumber(parseFloat($("#input_r").val()), 2, 5)) {
+        return true;
+    } else {
+        if (!(validateTextNumber($("#input_y").val()) && validateNumber(parseFloat($("#input_y").val()), -5, 3))) {
+            document.getElementById("warning").innerHTML = "Please, enter rigth value for Y";
+        } else {
+            document.getElementById("warning").innerHTML = "Please, enter rigth value for R";
+        }
+        return false;
+    }
 }
 
 checkTheme();
 initialilzeGraph(graphColor, graphPointColor);
-bindDataSendingButtons((tableData) => {
-    paintPoints(tableData);
-    fillTable(tableData);
-}, BASE_URL);
-$.ajax({
-    url: BASE_URL,
-    type: "get",
-    success: function(response) {
-        paintPoints(JSON.parse(response));
-        fillTable(JSON.parse(response));
-    },
-    error: function(xhr) {
-        console.log("Error");
-    }
-});
-const toggleSwitch = document.querySelector('.switch input[type="checkbox"]');
+document.getElementById("form").addEventListener("submit", checkMyForm);
 toggleSwitch.addEventListener('change', switchTheme, false);
 
-// document.addEventListener("DOMContentLoaded", () => {
-//     document.getElementById('warning').innerHTML = "";
-// });
+canvas.onmousedown = function(event) {
+    document.getElementById('warning').innerHTML = "";
+
+    if (!validateTextNumber($("#input_r").val()) || !validateNumber(parseFloat($("#input_r").val()), 2, 5)) {
+        document.getElementById("warning").innerHTML = "Please, enter rigth value for R";
+        return;
+    }
+
+    const r = parseFloat($("#input_r").val());
+    const x = convertXToRadiusOf(event.offsetX, r).toFixed(3);
+    const y = convertYToRadiusOf(event.offsetY, r).toFixed(3);
+
+    if (!validateNumber(parseFloat(y), -5, 3)) {
+        document.getElementById("warning").innerHTML = "Please, click on rigth value for Y";
+        return;
+    } else if (!validateNumber(parseFloat(x), -5, 3)) {
+        document.getElementById("warning").innerHTML = "Please, click on rigth value for X";
+        return;
+    }
+    document.getElementById("x-10").value = x;
+    document.getElementById("input_y").value = y;
+    document.getElementById("x-10").click();
+};
+
