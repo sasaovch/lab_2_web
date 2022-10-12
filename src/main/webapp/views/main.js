@@ -49,7 +49,7 @@ function fillTable(tableData) {
     tbody.innerHTML = "";
     tableData.forEach((row) => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${row.attampt}</td><td>${row.x}</td><td>${row.y}</td><td>${row.r}</td><td>${row.result}</td><td>${row.time}</td><td>${row.execTime}</td>`;
+        tr.innerHTML = `<td>${row.attampt}</td><td>${row.x}</td><td>${row.y}</td><td>${row.r}</td><td>${row.result}</td><td>${row.time}</td><td>${row.duration}</td>`;
         tbody.appendChild(tr);
     });
 }
@@ -73,7 +73,3 @@ $.ajax({
 });
 const toggleSwitch = document.querySelector('.switch input[type="checkbox"]');
 toggleSwitch.addEventListener('change', switchTheme, false);
-
-// document.addEventListener("DOMContentLoaded", () => {
-//     document.getElementById('warning').innerHTML = "";
-// });
