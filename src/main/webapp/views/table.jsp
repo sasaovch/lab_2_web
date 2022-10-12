@@ -4,7 +4,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="jakarta.servlet.http.HttpSession" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!-- <%@ page buffer="20kb" autoFlush="false" %> -->
 
 <!DOCTYPE html>
 <html>
@@ -45,7 +44,7 @@
                         <tr>
                             <td></td>
                             <td>
-                                <form id="form" action="/lab_2/table"">
+                                <form id="form" action="/lab_2_v2/table" method="get">
                                     <table class="select-table">
                                         <tr>
                                             <td>
@@ -159,6 +158,7 @@
                 </td>
             </tr>
         </table>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script type="module" src="./views/main.js"></script>
     </body>
 </html>

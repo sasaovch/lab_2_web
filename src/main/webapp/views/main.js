@@ -13,10 +13,25 @@ const getCookie = name => {
     for (let i = 0; i < cookies.length; i++) {
       let c = cookies[i].trim().split('=')
       if (c[0] === name) {
-        return decodeURIComponent(c[1])
-      }
+          return decodeURIComponent(c[1])
+        }
     }
     return ''
+}
+
+function checkAndSendForm(ev) {
+    document.getElementById('warning').innerHTML = "";
+    if (validateTextNumber($("#input_y").val()) && validateNumber(parseFloat($("#input_y").val()), -5, 3)
+    && validateTextNumber($("#input_r").val()) && validateNumber(parseFloat($("#input_r").val()), 2, 5)) {
+        return true;
+    } else {
+        if (!(validateTextNumber($("#input_y").val()) && validateNumber(parseFloat($("#input_y").val()), -5, 3))) {
+            document.getElementById("warning").innerHTML = "Please, enter rigth value for Y";
+        } else {
+            document.getElementById("warning").innerHTML = "Please, enter rigth value for R";
+        }
+    }
+    return false;
 }
 
 function checkTheme() {
@@ -71,26 +86,11 @@ function validateNumber(number, start, finish) {
     return start <= number && number <= finish;
 }
 
-function checkMyForm(event) {
-    console.log("checkMyForm");
-    document.getElementById('warning').innerHTML = "";
-    if (validateTextNumber($("#input_y").val()) && validateNumber(parseFloat($("#input_y").val()), -5, 3)
-    && validateTextNumber($("#input_r").val()) && validateNumber(parseFloat($("#input_r").val()), 2, 5)) {
-        return true;
-    } else {
-        if (!(validateTextNumber($("#input_y").val()) && validateNumber(parseFloat($("#input_y").val()), -5, 3))) {
-            document.getElementById("warning").innerHTML = "Please, enter rigth value for Y";
-        } else {
-            document.getElementById("warning").innerHTML = "Please, enter rigth value for R";
-        }
-        return false;
-    }
-}
 
 checkTheme();
 initialilzeGraph(graphColor, graphPointColor);
-document.getElementById("form").addEventListener("submit", checkMyForm);
 toggleSwitch.addEventListener('change', switchTheme, false);
+document.getElementById("form").onsubmit = checkAndSendForm;
 
 canvas.onmousedown = function(event) {
     document.getElementById('warning').innerHTML = "";
